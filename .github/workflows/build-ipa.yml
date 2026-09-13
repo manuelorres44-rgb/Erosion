@@ -11,12 +11,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Disable broken KeypadView
+      - name: Stub broken KeypadView
         run: |
           cat > Erosion/Tweaks/KeypadView.swift <<'EOF'
           import SwiftUI
-          // Keypad UI disabled for this build.
-          // We only need Erosion's File Browser / bad_query functionality.
+
+          struct KeypadView: View {
+              var body: some View {
+                  Text("Dialer Themer disabled in this build")
+                      .navigationTitle("Dialer Themer")
+              }
+          }
           EOF
 
       - name: Build IPA
