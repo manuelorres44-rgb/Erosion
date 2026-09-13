@@ -24,6 +24,30 @@ jobs:
           }
           EOF
 
+      - name: Add App Bundles browser
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path("Erosion/FMRootView.swift")
+          s = p.read_text()
+
+          old = '''NavigationLink("Applications", destination: FileBrowserView(path: FSURL.appContainers, isContainer: true))
+
+                      NavigationLink("Daemons", destination: FileBrowserView(path: FSURL.internalDaemons, isContainer: true))'''
+
+          new = '''NavigationLink("Applications", destination: FileBrowserView(path: FSURL.appContainers, isContainer: true))
+
+                      NavigationLink("App Bundles", destination: FileBrowserView(path: URL(fileURLWithPath: FSPaths.appBundles), shouldGrant: true))
+
+                      NavigationLink("Daemons", destination: FileBrowserView(path: FSURL.internalDaemons, isContainer: true))'''
+
+          if old not in s:
+              raise SystemExit("Could not find insertion point")
+
+          p.write_text(s.replace(old, new, 1))
+          PY
+
       - name: Build IPA
         run: |
           chmod +x ipabuild.sh
