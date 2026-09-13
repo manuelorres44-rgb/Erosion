@@ -32,20 +32,19 @@ jobs:
           p = Path("Erosion/FMRootView.swift")
           s = p.read_text()
 
-          old = '''NavigationLink("Applications", destination: FileBrowserView(path: FSURL.appContainers, isContainer: true))
+          needle = 'NavigationLink("Applications", destination: FileBrowserView(path: FSURL.appContainers, isContainer: true))'
 
-                      NavigationLink("Daemons", destination: FileBrowserView(path: FSURL.internalDaemons, isContainer: true))'''
+          replacement = needle + '''
+                      NavigationLink("App Bundles", destination: FileBrowserView(path: URL(fileURLWithPath: FSPaths.appBundles), shouldGrant: true))'''
 
-          new = '''NavigationLink("Applications", destination: FileBrowserView(path: FSURL.appContainers, isContainer: true))
+          if needle not in s:
+              print(s)
+              raise SystemExit("Applications line not found")
 
-                      NavigationLink("App Bundles", destination: FileBrowserView(path: URL(fileURLWithPath: FSPaths.appBundles), shouldGrant: true))
+          s = s.replace(needle, replacement, 1)
+          p.write_text(s)
 
-                      NavigationLink("Daemons", destination: FileBrowserView(path: FSURL.internalDaemons, isContainer: true))'''
-
-          if old not in s:
-              raise SystemExit("Could not find insertion point")
-
-          p.write_text(s.replace(old, new, 1))
+          print("App Bundles entry added successfully")
           PY
 
       - name: Build IPA
