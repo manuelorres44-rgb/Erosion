@@ -11,6 +11,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Disable broken KeypadView
+        run: |
+          cat > Erosion/Tweaks/KeypadView.swift <<'EOF'
+          import SwiftUI
+          // Keypad UI disabled for this build.
+          // We only need Erosion's File Browser / bad_query functionality.
+          EOF
+
       - name: Build IPA
         run: |
           chmod +x ipabuild.sh
